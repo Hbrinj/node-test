@@ -1,0 +1,45 @@
+version: '3.7'
+
+services: 
+    main:
+        container_name: node_test
+        build:
+            context: .
+            target: development
+        command: npm run start:dev
+        networks: 
+            - webnet
+        volumes: 
+            - .:/user/src/app
+            - /usr/src/app/node_modules
+        ports: 
+            - ${SERVER_PORT}:${SERVER_PORT}
+            - 9229:9229
+        env_file: 
+            - .env
+        depends_on: 
+            - db
+    db:
+        container_name: db
+        image: postgres:12
+        networks: 
+            - webnet
+        environment: 
+            POSTGRES_PASSWORD: root
+            POSTGRES_USER: root
+            POSTGRES_DB: node_test
+            PG_DATA: /var/lib/postgresql/data
+        ports: 
+            - 5432:5432
+        volumes: 
+            - pgdata:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+networks:
+    webnet:
+volumes: 
+    pgdata:
+        
