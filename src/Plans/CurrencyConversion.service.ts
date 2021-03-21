@@ -7,7 +7,6 @@ export class CurrencyConversionService {
     private readonly base: string = "GBP"
     private readonly url: string = `https://api.exchangeratesapi.io/latest?base=${this.base}&symbols=`
 
-    //TODO: this is a bit nieve, need to make sure we're not doing anything janky
     async getConversionRateFor(currency: string): Promise<number> {
         let rate = null
         try {

@@ -2,36 +2,33 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SubscribeController } from './subscribe.controller';
 import { SubscribeService } from './subscribe.service';
 
-// describe('PlansController', () => {
-//     let subscribeController: SubscribeController;
+describe('PlansController', () => {
+    let subscribeController: SubscribeController;
+    let putSubscriptions: jest.Mock
+    beforeEach( async() => {
+        putSubscriptions = jest.fn()
+        const app: TestingModule = await Test.createTestingModule({
+            controllers: [SubscribeController],
+            providers: [
+                {
+                    provide: SubscribeService,
+                    useValue: {
+                        putSubscriptions
+                    }
+                }
+            ]
+        }).compile();
+        subscribeController = app.get<SubscribeController>(SubscribeController)
+    });
 
-//     beforeEach( async() => {
-//         const app: TestingModule = await Test.createTestingModule({
-//             controllers: [SubscribeController],
-//             providers: [SubscribeService]
-//         }).compile();
+    it('should return the subscriptions the user has', () => {
+        // Given
+        let planDto = { plans: ["123"] }
 
-//         subscribeController = app.get<SubscribeController>(SubscribeController)
-//     });
+        // When
+        let result = subscribeController.addSubscriptions("456", planDto)
 
-//     //TODO: go an actually assert some things here
-//     describe('/subscribe', () => {
-//         // it('Should make a call to check if the customer has plans', () => {
-//         //     expect(subscribeController.addSubscriptions())
-//         // });
-
-//         // it('Should return a 400 if they already have a plan', () => {
-//         //     expect(subscribeController.addSubscriptions())
-//         // });
-
-//         // it('Should add plans if they dont have any', () => {
-//         //     expect(subscribeController.addSubscriptions())
-//         // });
-//     });
-
-//     describe('/subscribe/{UserId}', () => {
-//         it('should return the subscriptions the user has', () => {
-//             expect(subscribeController.getSubscriptions("123")).toEqual({subscriptions: "123"})
-//         });
-//     });
-// });
+        // Then
+        expect(putSubscriptions).toBeCalledTimes(1)
+    });
+});

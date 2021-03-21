@@ -1,22 +1,40 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import { Repository } from "typeorm";
-import { User } from "src/User/Entities/user.entity";
+import { User } from "../User/Entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Plan } from "src/Plans/entities/plans.entity";
+import { Plan } from "../Plans/entities/plans.entity";
 
 @Injectable()
 export class SubscribeService {
     constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
 
     async putSubscriptions(userId: string, plans: string[]) {
-        let user = (await this.getSubscriptions(userId))[0]
+        let users = null
+        try {
+            users = await this.getSubscriptions(userId)
+        } catch (errors) {
+            throw new HttpException("Unable to add subscriptions", HttpStatus.BAD_REQUEST)
+        }
+        
+        if ( !users || users.length > 1 || !users[0]) {
+            throw new HttpException("Unable to add subscriptions", HttpStatus.BAD_REQUEST)
+        }
+
+        let user: User = users[0]
+        if( user.subscriptions && user.subscriptions.length > 0) {
+            throw new HttpException("Unable to add subscriptions", HttpStatus.BAD_REQUEST)
+        }
         let newPlans = plans.map((plan) => {
             var p = new Plan()
             p.id = plan
             return p;
         })
         user.subscriptions = newPlans
-        this.userRepository.save(user)
+        try {
+            await this.userRepository.save(user)
+        } catch (errors) {
+            throw new HttpException("Unable to add subscriptions", HttpStatus.BAD_REQUEST)
+        }
     }
 
     async getSubscriptions(userId: string): Promise<User[]> {

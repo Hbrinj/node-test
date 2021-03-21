@@ -16,10 +16,7 @@ export class SubscribeController {
     }
 
     @Get(":userId")
-    async getSubscriptions(@Param('userId') userId: string): Promise<User[]> {
-        let subscriptions = await this.subscribeService.getSubscriptions(userId)
-        subscriptions[0]
-        console.log(subscriptions)
-        return subscriptions
+    getSubscriptions(@Param('userId') userId: string): Promise<User[]> {
+        return this.subscribeService.getSubscriptions(userId)
     }
 }
