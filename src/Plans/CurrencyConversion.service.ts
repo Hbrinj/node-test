@@ -9,13 +9,17 @@ export class CurrencyConversionService {
 
     //TODO: this is a bit nieve, need to make sure we're not doing anything janky
     async getConversionRateFor(currency: string): Promise<number> {
+        let rate = null
         try {
-            let response = await (await axios.get(`${this.url}${currency}`)).data
-            return response['rates'][currency]
+            let response = await axios.get(`${this.url}${currency}`)
+            rate = response.data['rates'][currency]
         } catch (errors) {
-            console.log(errors)
+            throw new Error("Unable to retrieve conversion rate")
         }
 
-        return 
+        if( !rate ) {
+            throw new Error("conversion data was undefined")
+        }
+        return rate
     }
 }
