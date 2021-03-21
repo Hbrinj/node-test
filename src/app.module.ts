@@ -14,11 +14,11 @@ import { Connection } from 'typeorm';
       type: 'postgres',
       host: 'db',
       port: 5432,
-      username: 'root',
+      username: 'postgres',
       password: 'root',
       database: 'node_test',
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: false
     })
   ],
   controllers: [],

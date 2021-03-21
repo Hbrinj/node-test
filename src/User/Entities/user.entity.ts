@@ -1,10 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from "typeorm";
+import { Plan } from "src/Plans/entities/plans.entity";
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn("uuid", {name:"user_id"})
     id: string;
 
-    @Column()
+    @Column({name:"first_name"})
     firstName: string;
+
+    @ManyToMany(() => Plan)
+    @JoinTable()
+    subscriptions: Plan[]
 }
